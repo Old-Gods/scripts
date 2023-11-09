@@ -1,3 +1,4 @@
+src/.bandcamp/credentials.json
 .env
 .pnp.*
 .yarn/*
