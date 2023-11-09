@@ -417,6 +417,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@colors/colors@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@colors/colors@npm:1.5.0"
+  checksum: eb42729851adca56d19a08e48d5a1e95efd2a32c55ae0323de8119052be0510d4b7a1611f2abcbf28c044a6c11e6b7d38f99fccdad7429300c37a8ea5fb95b44
+  languageName: node
+  linkType: hard
+
 "@cspotcode/source-map-support@npm:^0.8.0":
   version: 0.8.1
   resolution: "@cspotcode/source-map-support@npm:0.8.1"
@@ -922,6 +929,7 @@ __metadata:
     "@types/node": "npm:^20.9.0"
     "@types/yargs": "npm:^17.0.31"
     axios: "npm:^1.6.1"
+    cli-table3: "npm:^0.6.3"
     date-fns: "npm:^2.30.0"
     dotenv-extended: "npm:^2.9.0"
     jest: "npm:^29.7.0"
@@ -1530,6 +1538,19 @@ __metadata:
   version: 2.9.1
   resolution: "cli-spinners@npm:2.9.1"
   checksum: c9b1152bd387e5b76823bdee6f19079c4017994d352627216e5d3dab9220a8402514519ad96a0a12120b80752fead98d1e7a7a5f56ce32125f92778ef47bdd8c
+  languageName: node
+  linkType: hard
+
+"cli-table3@npm:^0.6.3":
+  version: 0.6.3
+  resolution: "cli-table3@npm:0.6.3"
+  dependencies:
+    "@colors/colors": "npm:1.5.0"
+    string-width: "npm:^4.2.0"
+  dependenciesMeta:
+    "@colors/colors":
+      optional: true
+  checksum: 39e580cb346c2eaf1bd8f4ff055ae644e902b8303c164a1b8894c0dc95941f92e001db51f49649011be987e708d9fa3183ccc2289a4d376a057769664048cc0c
   languageName: node
   linkType: hard
 

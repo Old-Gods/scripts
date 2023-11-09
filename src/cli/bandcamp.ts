@@ -1,10 +1,20 @@
-import { setTimeout } from 'timers/promises'
+import { readFile, writeFile } from 'node:fs/promises'
+import * as path from 'node:path'
+import { setTimeout } from 'node:timers/promises'
 import yargs from 'yargs'
 import axios from 'axios'
 import env from '../dotenv'
 import { pick } from 'lodash'
 import { format as formatDate } from 'date-fns'
-import { readFile } from 'fs/promises'
+import Table from 'cli-table3'
+
+const credentialsPath = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  '.bandcamp',
+  'credentials.json',
+)
 
 yargs
   .scriptName('bandcamp')
@@ -17,8 +27,7 @@ yargs
         .option('clientId', {
           alias: 'i',
           type: 'number',
-          default: env.BANDCAMP_CLIENT_ID,
-          coerce: Number,
+          default: Number(env.BANDCAMP_CLIENT_ID),
         })
         .option('clientSecret', {
           alias: 's',
@@ -27,18 +36,23 @@ yargs
         }),
     async (argv) => {
       const credentials = await getCredentials()
+      const params = new URLSearchParams()
+      params.set('client_id', argv.clientId.toString())
+      params.set('client_secret', argv.clientSecret)
+      params.set(
+        'grant_type',
+        credentials?.refresh_token ? 'refresh_token' : 'client_credentials',
+      )
+      if (credentials?.refresh_token)
+        params.set('refresh_token', credentials.refresh_token)
 
-      const response = await axios.post('https://bandcamp.com/oauth_token', {
-        grant_type: credentials?.refresh_token
-          ? 'refresh_token'
-          : 'client_credentials',
-        client_id: encodeURIComponent(argv.clientId),
-        client_secret: encodeURIComponent(argv.clientSecret),
-        refresh_token:
-          credentials?.refresh_token &&
-          encodeURIComponent(credentials.refresh_token),
-      })
+      const response = await axios.post(
+        'https://bandcamp.com/oauth_token',
+        params,
+      )
 
+      await setCredentials(response.data)
+      console.info('DONE!')
       console.info(response.data)
     },
   )
@@ -59,7 +73,15 @@ yargs
         },
       )
 
-      console.info(JSON.stringify(response.data, null, 2))
+      const table = new Table({
+        head: ['id', 'name', 'subdomain'],
+      })
+
+      for (const band of response.data.bands) {
+        table.push([band.band_id, band.name, band.subdomain])
+      }
+
+      console.info(table.toString())
     },
   )
   .command(
@@ -235,8 +257,12 @@ yargs
 
 async function getCredentials() {
   try {
-    return (await import('../.bandcamp/credentials.json')).default
+    return JSON.parse((await readFile(credentialsPath)).toString())
   } catch (error) {
     return undefined
   }
+}
+
+async function setCredentials(credentials: any) {
+  await writeFile(credentialsPath, JSON.stringify(credentials, null, 2))
 }
