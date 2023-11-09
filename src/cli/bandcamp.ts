@@ -150,11 +150,11 @@ yargs
           default: formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss'),
         })
         .option('carrier', {
-          alias: 'C',
+          alias: 'c',
           type: 'string',
         })
         .option('commit', {
-          alias: 'c',
+          alias: 'C',
           describe:
             'By default this command will do nothing. The flag will submit all information to Bandcamp.',
           type: 'boolean',
@@ -170,9 +170,11 @@ yargs
       let paymentIds: number[] = []
 
       if (argv.paymentIdsFile) {
-        paymentIds = JSON.parse(
-          (await readFile(argv.paymentIdsFile)).toString(),
-        )
+        paymentIds = [
+          ...new Set<number>(
+            JSON.parse((await readFile(argv.paymentIdsFile)).toString()),
+          ),
+        ]
       } else {
         const { data: orders } = await axios.post(
           'https://bandcamp.com/api/merchorders/3/get_orders',
@@ -202,30 +204,31 @@ yargs
         console.info('Dry run')
         console.info('Setting', options)
         console.info(`TO ${paymentIds.length} ids`)
-        console.info(JSON.stringify(paymentIds, null, 2))
+        console.info(paymentIds)
         return
       }
 
-      console.info('SUBMITTING INFO TO BANDCAMP')
+      console.info(`SUBMITTING ${paymentIds.length} IDs TO BANDCAMP`)
       await setTimeout(5_000)
 
-      for (const id of paymentIds) {
-        console.info(id)
-        const response = await axios.post(
-          'https://bandcamp.com/api/merchorders/2/update_shipped',
-          {
-            ...options,
-            id,
+      const items = paymentIds.map((id) => ({
+        ...options,
+        id,
+      }))
+
+      const response = await axios.post(
+        'https://bandcamp.com/api/merchorders/2/update_shipped',
+        {
+          items,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${credentials?.access_token}`,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${credentials?.access_token}`,
-            },
-          },
-        )
-        console.info(response.data)
-        await setTimeout(argv.interval)
-      }
+        },
+      )
+
+      console.info(response.data)
     },
   )
   .demandCommand().argv
