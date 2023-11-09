@@ -4,6 +4,7 @@ import axios from 'axios'
 import env from '../dotenv'
 import { pick } from 'lodash'
 import { format as formatDate } from 'date-fns'
+import { readFile } from 'fs/promises'
 
 yargs
   .scriptName('bandcamp')
@@ -121,6 +122,10 @@ yargs
           demandOption: true,
           type: 'number',
         })
+        .option('payment-ids-file', {
+          alias: 'f',
+          type: 'string',
+        })
         .option('start', {
           alias: 's',
           type: 'string',
@@ -162,21 +167,29 @@ yargs
     async (argv) => {
       const credentials = await getCredentials()
 
-      const { data: orders } = await axios.post(
-        'https://bandcamp.com/api/merchorders/3/get_orders',
-        {
-          band_id: argv.band,
-          name: argv.name,
-          start_time: argv.start,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${credentials?.access_token}`,
-          },
-        },
-      )
+      let paymentIds: number[] = []
 
-      const paymentIds = orders.items.map((item: any) => item.payment_id)
+      if (argv.paymentIdsFile) {
+        paymentIds = JSON.parse(
+          (await readFile(argv.paymentIdsFile)).toString(),
+        )
+      } else {
+        const { data: orders } = await axios.post(
+          'https://bandcamp.com/api/merchorders/3/get_orders',
+          {
+            band_id: argv.band,
+            name: argv.name,
+            start_time: argv.start,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${credentials?.access_token}`,
+            },
+          },
+        )
+
+        paymentIds = orders.items.map((item: any) => item.payment_id)
+      }
 
       const options = {
         id_type: 'p',
@@ -189,7 +202,7 @@ yargs
         console.info('Dry run')
         console.info('Setting', options)
         console.info(`TO ${paymentIds.length} ids`)
-        console.info(paymentIds)
+        console.info(JSON.stringify(paymentIds, null, 2))
         return
       }
 
@@ -197,7 +210,8 @@ yargs
       await setTimeout(5_000)
 
       for (const id of paymentIds) {
-        await axios.post(
+        console.info(id)
+        const response = await axios.post(
           'https://bandcamp.com/api/merchorders/2/update_shipped',
           {
             ...options,
@@ -209,6 +223,7 @@ yargs
             },
           },
         )
+        console.info(response.data)
         await setTimeout(argv.interval)
       }
     },
