@@ -23,6 +23,7 @@
     "zod": "^3.22.4"
   },
   "scripts": {
-    "bandcamp": "ts-node src/cli/bandcamp.ts"
+    "bandcamp": "ts-node src/cli/bandcamp.ts",
+    "test": "tsc"
   }
 }
