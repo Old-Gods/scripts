@@ -1,6 +1,7 @@
 .bandcamp/credentials.json
 .env
 .pnp.*
+tsconfig.tsbuildinfo
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
