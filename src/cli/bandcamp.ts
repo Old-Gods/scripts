@@ -1,100 +1,80 @@
-import { readFile, writeFile } from 'node:fs/promises'
-import * as path from 'node:path'
+import { readFile } from 'node:fs/promises'
 import { setTimeout } from 'node:timers/promises'
 import yargs from 'yargs'
-import axios from 'axios'
 import env from '../dotenv'
 import { pick } from 'lodash'
 import { format as formatDate } from 'date-fns'
 import Table from 'cli-table3'
-
-const credentialsPath = path.resolve(
-  __dirname,
-  '..',
-  '..',
-  '.bandcamp',
-  'credentials.json',
-)
+import {
+  formatError,
+  getMyBands,
+  getOrders,
+  login,
+  updateShipping,
+} from '../bandcamp'
 
 yargs
   .scriptName('bandcamp')
   .usage('$0 <cmd> [args]')
+  .fail((_msg, err) => {
+    console.error(formatError(err))
+    process.exit(1)
+  })
+
   .command(
     'login',
     'Log in to bandcamp',
     (yargs) =>
       yargs
-        .option('clientId', {
+        .option('client_id', {
           alias: 'i',
           type: 'number',
           default: Number(env.BANDCAMP_CLIENT_ID),
         })
-        .option('clientSecret', {
+        .option('client_secret', {
           alias: 's',
           type: 'string',
           default: env.BANDCAMP_CLIENT_SECRET,
         }),
     async (argv) => {
-      const credentials = await getCredentials()
-      const params = new URLSearchParams()
-      params.set('client_id', argv.clientId.toString())
-      params.set('client_secret', argv.clientSecret)
-      params.set(
-        'grant_type',
-        credentials?.refresh_token ? 'refresh_token' : 'client_credentials',
-      )
-      if (credentials?.refresh_token)
-        params.set('refresh_token', credentials.refresh_token)
-
-      const response = await axios.post(
-        'https://bandcamp.com/oauth_token',
-        params,
-      )
-
-      await setCredentials(response.data)
-      console.info('DONE!')
-      console.info(response.data)
+      await login(argv)
+      console.info('Successfully logged in.')
     },
   )
+
   .command(
     'bands',
     'Get your band(s) info',
     (yargs) => yargs,
     async () => {
-      const credentials = await getCredentials()
+      const myBands = await getMyBands()
 
-      const response = await axios.post(
-        'https://bandcamp.com/api/account/1/my_bands',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${credentials?.access_token}`,
-          },
-        },
-      )
+      if (!myBands) return
 
       const table = new Table({
         head: ['id', 'name', 'subdomain'],
       })
 
-      for (const band of response.data.bands) {
+      for (const band of myBands) {
         table.push([band.band_id, band.name, band.subdomain])
       }
 
       console.info(table.toString())
     },
   )
+
   .command(
     'orders',
     'Get Current Orders',
     async (yargs) =>
       yargs
-        .option('band', {
+        .option('band_id', {
           alias: 'b',
           demandOption: true,
           type: 'number',
+          coerce: Number,
         })
-        .option('start', {
+        .option('start_time', {
           alias: 's',
           type: 'string',
         })
@@ -108,68 +88,28 @@ yargs
           default: [],
         }),
     async (argv) => {
-      const credentials = await getCredentials()
-
-      const response = await axios.post(
-        'https://bandcamp.com/api/merchorders/3/get_orders',
-        {
-          band_id: argv.band,
-          name: argv.name,
-          start_time: argv.start,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${credentials?.access_token}`,
-          },
-        },
-      )
+      const orders = await getOrders(argv)
 
       const data =
         argv.field.length === 1
-          ? response.data.items.map((item: any) => item[argv.field[0]])
+          ? orders.map((item: any) => item[argv.field[0]])
           : argv.field.length
-          ? response.data.items.map((item: any) => pick(item, argv.field!))
-          : response.data.items
+          ? orders.map((item: any) => pick(item, argv.field!))
+          : orders
 
       console.info(JSON.stringify(data, null, 2))
     },
   )
+
   .command(
     'ship',
     'Update shipping information on certain orders',
     async (yargs) =>
       yargs
-        .option('band', {
+        .option('band_id', {
           alias: 'b',
           demandOption: true,
           type: 'number',
-        })
-        .option('payment-ids-file', {
-          alias: 'f',
-          type: 'string',
-        })
-        .option('start', {
-          alias: 's',
-          type: 'string',
-        })
-        .option('name', {
-          alias: 'n',
-          type: 'string',
-        })
-        .option('shipped', {
-          alias: 'S',
-          type: 'boolean',
-          default: false,
-        })
-        .option('notify', {
-          alias: 'N',
-          type: 'boolean',
-          default: false,
-        })
-        .option('ship-date', {
-          alias: 'd',
-          type: 'string',
-          default: formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss'),
         })
         .option('carrier', {
           alias: 'c',
@@ -185,84 +125,80 @@ yargs
           alias: 'i',
           type: 'number',
           default: 1_000,
+        })
+        .option('ids_file', {
+          alias: 'f',
+          type: 'string',
+          config: true,
+        })
+        .option('id_type', {
+          alias: 't',
+          choices: ['p', 's'],
+          default: 'p',
+          type: 'string',
+          coerce: (x) => x as 'p' | 's',
+        })
+        .option('name', {
+          alias: 'n',
+          type: 'string',
+        })
+        .option('notify', {
+          alias: 'N',
+          type: 'boolean',
+          default: false,
+        })
+        .option('ship_date', {
+          alias: 'd',
+          type: 'string',
+          default: formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+        })
+        .option('shipped', {
+          alias: 'S',
+          type: 'boolean',
+          default: false,
+        })
+        .option('start_time', {
+          alias: 's',
+          type: 'string',
         }),
     async (argv) => {
-      const credentials = await getCredentials()
+      let ids: number[] = []
 
-      let paymentIds: number[] = []
-
-      if (argv.paymentIdsFile) {
-        paymentIds = [
+      if (argv.ids_file) {
+        ids = [
           ...new Set<number>(
-            JSON.parse((await readFile(argv.paymentIdsFile)).toString()),
+            JSON.parse((await readFile(argv.ids_file)).toString()),
           ),
         ]
       } else {
-        const { data: orders } = await axios.post(
-          'https://bandcamp.com/api/merchorders/3/get_orders',
-          {
-            band_id: argv.band,
-            name: argv.name,
-            start_time: argv.start,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${credentials?.access_token}`,
-            },
-          },
+        const orders = await getOrders(argv)
+        ids = orders.items.map((item: any) =>
+          argv.id_type === 'p' ? item.payment_id : item.sale_item_id,
         )
-
-        paymentIds = orders.items.map((item: any) => item.payment_id)
       }
 
-      const options = {
-        id_type: 'p',
-        ship_date: argv.shipDate,
-        shipped: argv.shipped,
-        carrier: argv.carrier,
-      }
+      const options = pick(argv, ['id_type', 'ship_date', 'shipped', 'carrier'])
 
       if (!argv.commit) {
         console.info('Dry run')
         console.info('Setting', options)
-        console.info(`TO ${paymentIds.length} ids`)
-        console.info(paymentIds)
+        console.info(`TO ${ids.length} ids`)
+        console.info(ids)
         return
       }
 
-      console.info(`SUBMITTING ${paymentIds.length} IDs TO BANDCAMP`)
+      console.info(`SUBMITTING ${ids.length} IDs TO BANDCAMP`)
       await setTimeout(5_000)
 
-      const items = paymentIds.map((id) => ({
+      const items = ids.map((id) => ({
         ...options,
         id,
       }))
 
-      const response = await axios.post(
-        'https://bandcamp.com/api/merchorders/2/update_shipped',
-        {
-          items,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${credentials?.access_token}`,
-          },
-        },
-      )
+      await updateShipping(items)
 
-      console.info(response.data)
+      console.info('Success')
     },
   )
+
   .demandCommand().argv
-
-async function getCredentials() {
-  try {
-    return JSON.parse((await readFile(credentialsPath)).toString())
-  } catch (error) {
-    return undefined
-  }
-}
-
-async function setCredentials(credentials: any) {
-  await writeFile(credentialsPath, JSON.stringify(credentials, null, 2))
-}
