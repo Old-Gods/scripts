@@ -19,9 +19,11 @@
     "lodash": "^4.17.21",
     "prettier": "^3.0.3",
     "tslib": "^2.6.2",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "zod": "^3.22.4"
   },
   "scripts": {
-    "bandcamp": "ts-node src/cli/bandcamp.ts"
+    "bandcamp": "ts-node src/cli/bandcamp.ts",
+    "build": "tsc"
   }
 }
