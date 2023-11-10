@@ -24,6 +24,6 @@
   },
   "scripts": {
     "bandcamp": "ts-node src/cli/bandcamp.ts",
-    "test": "tsc"
+    "build": "tsc"
   }
 }
