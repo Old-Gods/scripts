@@ -66,15 +66,17 @@ export async function updateShipping(
   })
 }
 
-export function formatError(error: Error) {
+export function formatError(error: unknown) {
   if (error instanceof AxiosError) {
     if (error.response?.status === 401) {
       return 'Unauthorised. Please login first.'
     } else {
       return `Unexpected response code "${error.response?.status}" from the bandcamp API.\n${error.message}`
     }
-  } else {
+  } else if (error instanceof Error) {
     return error.message
+  } else {
+    return error
   }
 }
 
