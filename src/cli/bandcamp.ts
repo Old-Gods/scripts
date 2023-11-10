@@ -1,8 +1,7 @@
-import { readFile } from 'node:fs/promises'
 import { setTimeout } from 'node:timers/promises'
 import yargs from 'yargs'
 import env from '../dotenv'
-import { pick } from 'lodash'
+import { pick, uniq } from 'lodash'
 import { format as formatDate } from 'date-fns'
 import Table from 'cli-table3'
 import {
@@ -12,6 +11,8 @@ import {
   login,
   updateShipping,
 } from '../bandcamp'
+import { z } from 'zod'
+import { loadJSON } from '../fs'
 
 yargs
   .scriptName('bandcamp')
@@ -128,8 +129,15 @@ yargs
         })
         .option('ids_file', {
           alias: 'f',
+          conflicts: ['name', 'start_time'],
           type: 'string',
-          config: true,
+          coerce: async (fileName) =>
+            uniq(
+              z
+                .number()
+                .array()
+                .parse(await loadJSON(fileName)),
+            ),
         })
         .option('id_type', {
           alias: 't',
@@ -162,20 +170,11 @@ yargs
           type: 'string',
         }),
     async (argv) => {
-      let ids: number[] = []
-
-      if (argv.ids_file) {
-        ids = [
-          ...new Set<number>(
-            JSON.parse((await readFile(argv.ids_file)).toString()),
-          ),
-        ]
-      } else {
-        const orders = await getOrders(argv)
-        ids = orders.items.map((item: any) =>
-          argv.id_type === 'p' ? item.payment_id : item.sale_item_id,
-        )
-      }
+      const ids: number[] = argv.ids_file
+        ? await argv.ids_file
+        : (await getOrders(argv)).items.map((item: any) =>
+            argv.id_type === 'p' ? item.payment_id : item.sale_item_id,
+          )
 
       const options = pick(argv, ['id_type', 'ship_date', 'shipped', 'carrier'])
 
