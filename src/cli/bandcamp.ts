@@ -189,12 +189,12 @@ yargs
       console.info(`SUBMITTING ${ids.length} IDs TO BANDCAMP`)
       await setTimeout(5_000)
 
-      const items = ids.map((id) => ({
-        ...options,
-        id,
-      }))
-
-      await updateShipping(items)
+      await updateShipping(
+        ids.map((id) => ({
+          ...options,
+          id,
+        })),
+      )
 
       console.info('Success')
     },

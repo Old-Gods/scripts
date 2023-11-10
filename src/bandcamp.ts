@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
-import { readFile, writeFile } from 'node:fs/promises'
 import * as path from 'node:path'
+import { loadJSON, saveJSON } from './fs'
 
 const origin = 'https://bandcamp.com'
 
@@ -90,12 +90,12 @@ async function api(path: string, data: any = {}) {
 
 async function getCredentials() {
   try {
-    return JSON.parse((await readFile(credentialsPath)).toString())
+    return loadJSON(credentialsPath)
   } catch (error) {
     return undefined
   }
 }
 
 async function setCredentials(credentials: any) {
-  await writeFile(credentialsPath, JSON.stringify(credentials, null, 2))
+  await saveJSON(credentialsPath, credentials)
 }
