@@ -10,3 +10,5 @@ jobs:
       pull-requests: write
     steps:
       - uses: hmarr/auto-approve-action@v3
+        with:
+          review-message: '@dependabot merge'
