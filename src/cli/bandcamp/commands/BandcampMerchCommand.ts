@@ -42,7 +42,7 @@ export class BandcampMerchCommand extends BandcampCommand {
   })
 
   readonly field = Option.Array('-f,--field', [], {
-    description: 'An array of fields to output.',
+    description: 'Display only these fields. All by default.',
   })
 
   override async execute() {

@@ -44,7 +44,9 @@ export class BandcampOrdersCommand extends BandcampCommand {
     validator: t.isNumber(),
   })
 
-  readonly field = Option.Array('-f,--field', [])
+  readonly field = Option.Array('-f,--field', [], {
+    description: 'Display only these fields. All by default.',
+  })
 
   override async execute() {
     const spinner = this.startSpinner('Fetching orders')
