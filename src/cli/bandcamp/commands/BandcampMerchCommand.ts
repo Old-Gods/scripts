@@ -12,17 +12,9 @@ export class BandcampMerchCommand extends BandcampCommand {
       'Lists merchandise a label, band, or artist has available for purchase on Bandcamp',
   })
 
-  readonly band_id = Option.String('-b,--band_id', {
-    description:
-      'Bandcamp ID of your label or the (usually) label on whose behalf you are querying.',
-    required: true,
-    validator: t.isNumber(),
-  })
+  readonly band_id = BandcampCommand.BandIdOption()
 
-  readonly member_band_id = Option.String('-m,--member_band_id', {
-    description: 'Bandcamp ID of the band on which you wish to filter results.',
-    validator: t.isNumber(),
-  })
+  readonly member_band_id = BandcampCommand.MemberBandIdOption()
 
   readonly start_time = Option.String('-s,--start_time', {
     description:

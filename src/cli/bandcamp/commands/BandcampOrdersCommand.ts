@@ -11,17 +11,9 @@ export class BandcampOrdersCommand extends BandcampCommand {
     description: 'Lists merchandise orders placed with a band or label.',
   })
 
-  readonly band_id = Option.String('-b,--band_id', {
-    description:
-      'Bandcamp ID of your label or the (usually) label on whose behalf you are querying.',
-    required: true,
-    validator: t.isNumber(),
-  })
+  readonly band_id = BandcampCommand.BandIdOption()
 
-  readonly band_member_id = Option.String('-m,--band_member_id', {
-    description: 'Bandcamp ID of band to filter on; defaults to all.',
-    validator: t.isNumber(),
-  })
+  readonly member_band_id = BandcampCommand.MemberBandIdOption()
 
   readonly start_time = Option.String('-s,--start_time', {
     description: "Earliest sale dates you're interested in.",
