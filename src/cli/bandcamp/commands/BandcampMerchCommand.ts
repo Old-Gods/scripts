@@ -10,6 +10,62 @@ export class BandcampMerchCommand extends BandcampCommand {
   static override usage = Command.Usage({
     description:
       'Lists merchandise a label, band, or artist has available for purchase on Bandcamp',
+    details: /* md */ `
+## Response Values
+
+package_id
+: the Bandcamp ID of the merch item (use this in calls to other endpoints)
+
+album_title
+: if this is music merch (cd, vinyl, cassette), the name of album it's associated with
+
+title
+: name of the item for sale
+
+image_url
+: URL of the image on Bandcamp associated with this item
+
+quantity_available
+: number of units available for sale (i.e. which Bandcamp thinks it can still sell) across all shipping origins; null means unlimited
+
+quantity_sold
+: number of units that have been sold on Bandcamp across all shipping origins
+
+price
+: price per item
+
+currency
+: currency in which price is listed
+
+subdomain
+: the Bandcamp subdomain where the item can be found
+
+is_set_price
+: can the user pay more than the asking price if they want?
+
+sku
+: item sku
+
+options
+: options information in array form, one item for each option; null when there are no options. Each item in the array contains these fields:
+
+- option_id (i.e., the unique Bandcamp ID for this option)
+- quantity_sold
+- quantity_available
+- title
+- sku
+
+origin_quantities
+: quantities per shipping origin. Each item in the array contains these fields:
+
+- origin_id (i.e., the unique Bandcamp ID for this shipping origin)
+- quantity_available
+- quantity_sold
+- option_quantities quantities at this shipping origin per option. Each item in the array contains these fields:
+- option_id (i.e., the unique Bandcamp ID for this option)
+- quantity_available
+- quantity_sold
+`,
   })
 
   readonly band_id = BandcampCommand.BandIdOption()
