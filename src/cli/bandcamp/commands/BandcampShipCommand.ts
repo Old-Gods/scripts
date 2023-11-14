@@ -73,7 +73,7 @@ export class BandcampShipCommand extends BandcampCommand {
       return
     }
 
-    console.info(`SUBMITTING ${ids.length} IDs TO BANDCAMP`)
+    const spinner = this.startSpinner(`Shipping ${ids.length} IDs to bandcamp`)
     await setTimeout(5_000)
 
     await updateShipping(
@@ -83,6 +83,7 @@ export class BandcampShipCommand extends BandcampCommand {
       })),
     )
 
+    spinner.stop()
     console.info('Success')
   }
 }

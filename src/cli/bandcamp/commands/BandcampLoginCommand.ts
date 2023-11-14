@@ -21,7 +21,9 @@ export class BandcampLoginCommand extends BandcampCommand {
   )
 
   override async execute() {
+    const loader = this.startSpinner('Logging in')
     await login(this)
+    loader.stop()
     this.context.stdout.write('Success\n')
   }
 }

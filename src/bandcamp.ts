@@ -49,6 +49,16 @@ export async function getOrders(query: {
   return (await api('/merchorders/3/get_orders', query)).items
 }
 
+export async function getMerch(query: {
+  band_id: number
+  member_band_id?: number
+  start_time: string
+  end_time?: string
+  package_ids?: number[]
+}) {
+  return (await api('/merchorders/1/get_merch_details', query)).items
+}
+
 export async function updateShipping(
   items: {
     id: number
@@ -87,12 +97,15 @@ async function api(path: string, data: any = {}) {
       Authorization: `Bearer ${credentials?.access_token}`,
     },
   })
+  if (response.data.error && response.data.error_message) {
+    throw new Error(response.data.error_message)
+  }
   return response.data
 }
 
 async function getCredentials() {
   try {
-    return loadJSON(credentialsPath)
+    return await loadJSON(credentialsPath)
   } catch (error) {
     return undefined
   }

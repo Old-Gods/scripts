@@ -23,15 +23,18 @@ export class BandcampOrdersCommand extends BandcampCommand {
   readonly field = Option.Array('-f,--field', [])
 
   override async execute() {
+    const spinner = this.startSpinner('Fetching orders')
+
     const orders = await getOrders(this)
 
     const data =
       this.field.length === 1
         ? orders.map((item: any) => item[this.field[0]])
         : this.field.length
-        ? orders.map((item: any) => pick(item, this.field!))
-        : orders
+          ? orders.map((item: any) => pick(item, this.field!))
+          : orders
 
+    spinner.stop()
     this.context.stdout.write(JSON.stringify(data, null, 2) + '\n')
   }
 }

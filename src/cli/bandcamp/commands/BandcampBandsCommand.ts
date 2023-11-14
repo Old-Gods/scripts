@@ -11,6 +11,8 @@ export class BandcampBandsCommand extends BandcampCommand {
   })
 
   override async execute() {
+    const spinner = this.startSpinner('Getting bands')
+
     const myBands = await getMyBands()
 
     if (!myBands) return
@@ -23,6 +25,7 @@ export class BandcampBandsCommand extends BandcampCommand {
       table.push([band.band_id, band.name, band.subdomain])
     }
 
+    spinner.stop()
     this.context.stdout.write(table.toString() + '\n')
   }
 }
