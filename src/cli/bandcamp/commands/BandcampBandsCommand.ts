@@ -7,7 +7,8 @@ export class BandcampBandsCommand extends BandcampCommand {
   static override paths: string[][] = [['bands']]
 
   static override usage = Command.Usage({
-    description: 'Get your band(s) info',
+    description:
+      'list of the bands you have access to (either through artist accounts, label accounts, or partnerships).',
   })
 
   override async execute() {

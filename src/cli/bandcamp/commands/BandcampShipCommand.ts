@@ -2,29 +2,29 @@ import { Command, Option } from 'clipanion'
 import { setTimeout } from 'node:timers/promises'
 import * as t from 'typanion'
 import { loadJSON } from '../../../fs'
-import { getOrders, updateShipping } from '../../../bandcamp'
+import { updateShipping } from '../../../bandcamp'
 import { pick } from 'lodash'
 import { BandcampCommand } from './BandcampCommand'
+import z from 'zod'
 
 export class BandcampShipCommand extends BandcampCommand {
   static override paths: string[][] = [['ship']]
 
   static override usage = Command.Usage({
-    description: 'Update shipping information on certain orders',
-  })
-
-  readonly band_id = Option.String('-b,--band_id', {
-    description: 'Your band ID can be found with the `bands` command.',
-    required: true,
-    validator: t.isNumber(),
+    description: 'Updates shipped/unshipped status of merchandise orders',
   })
 
   readonly carrier = Option.String('-c,--carrier', {
-    description: 'The shipping carrier.',
+    description: 'Name of the shipping carrier (displayed to buyer).',
   })
 
   readonly commit = Option.Boolean('-C,--commit', {
     description: 'Send information to bandcamp. Dry run without.',
+  })
+
+  readonly ids = Option.Array('-i,--ids', [], {
+    description: 'Unique Bandcamp ID of the payment or sale item to update',
+    validator: t.isArray(t.isNumber()),
   })
 
   readonly ids_file = Option.String('-f,--ids_file', {
@@ -32,7 +32,8 @@ export class BandcampShipCommand extends BandcampCommand {
   })
 
   readonly id_type = Option.String('-t,--id_type', 'p', {
-    description: 'ID Type. Can be a sales item ID or a purchase ID.',
+    description:
+      "ID Type. 'p' when id parameter refers to a payment, 's' for sale item.",
     validator: t.isEnum(['p', 's'] as const),
   })
 
@@ -57,19 +58,23 @@ export class BandcampShipCommand extends BandcampCommand {
   })
 
   override async execute() {
-    const ids: number[] = this.ids_file
-      ? t.isArray(t.isNumber())(await loadJSON(this.ids_file))
-      : (await getOrders(this)).items.map((item: any) =>
-          this.id_type === 'p' ? item.payment_id : item.sale_item_id,
-        )
+    let ids: number[] = this.ids
+
+    if (this.ids_file) {
+      ids = z
+        .number()
+        .array()
+        .parse(await loadJSON(this.ids_file))
+    }
 
     const options = pick(this, ['id_type', 'ship_date', 'shipped', 'carrier'])
 
     if (!this.commit) {
-      console.info('Dry run')
-      console.info('Setting', options)
-      console.info(`TO ${ids.length} ids`)
-      console.info(ids)
+      this.context.stdout.write('Dry run\n')
+      this.context.stdout.write('Setting ')
+      this.context.stdout.write(JSON.stringify(options, null, 2) + '\n')
+      this.context.stdout.write(`TO ${ids.length} ids\n`)
+      this.context.stdout.write(JSON.stringify(ids, null, 2) + '\n')
       return
     }
 
@@ -84,6 +89,6 @@ export class BandcampShipCommand extends BandcampCommand {
     )
 
     spinner.stop()
-    console.info('Success')
+    this.context.stdout.write('Success\n')
   }
 }

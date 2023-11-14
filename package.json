@@ -18,7 +18,8 @@
     "ora": "^5.4.1",
     "prettier": "^3.1.0",
     "tslib": "^2.6.2",
-    "typanion": "^3.14.0"
+    "typanion": "^3.14.0",
+    "zod": "^3.22.4"
   },
   "scripts": {
     "bandcamp": "ts-node src/cli/bandcamp/run.ts",
