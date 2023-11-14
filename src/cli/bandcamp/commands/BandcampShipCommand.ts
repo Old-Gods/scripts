@@ -14,33 +14,47 @@ export class BandcampShipCommand extends BandcampCommand {
   })
 
   readonly band_id = Option.String('-b,--band_id', {
+    description: 'Your band ID can be found with the `bands` command.',
     required: true,
     validator: t.isNumber(),
   })
 
-  readonly carrier = Option.String('-c,--carrier')
-
-  readonly commit = Option.Boolean('-C,--commit')
-
-  readonly interval = Option.String('-i,--interval', {
-    validator: t.isNumber(),
+  readonly carrier = Option.String('-c,--carrier', {
+    description: 'The shipping carrier.',
   })
 
-  readonly ids_file = Option.String('-f,--ids_file')
+  readonly commit = Option.Boolean('-C,--commit', {
+    description: 'Send information to bandcamp. Dry run without.',
+  })
+
+  readonly ids_file = Option.String('-f,--ids_file', {
+    description: 'Use the IDs from this file.',
+  })
 
   readonly id_type = Option.String('-t,--id_type', 'p', {
+    description: 'ID Type. Can be a sales item ID or a purchase ID.',
     validator: t.isEnum(['p', 's'] as const),
   })
 
-  readonly name = Option.String('-n,--name')
+  readonly name = Option.String('-n,--name', {
+    description: 'Mark all items that where the item matches this name.',
+  })
 
-  readonly notify = Option.Boolean('-N,--noditify')
+  readonly notify = Option.Boolean('-N,--notify', {
+    description: 'Notify customers via email.',
+  })
 
-  readonly ship_date = Option.String('-d,--ship_date')
+  readonly ship_date = Option.String('-d,--ship_date', {
+    description: 'The date it was shipped.',
+  })
 
-  readonly shipped = Option.Boolean('-S,--shipped')
+  readonly shipped = Option.Boolean('-S,--shipped', {
+    description: 'Mark the item as shipped.',
+  })
 
-  readonly start_date = Option.String('-s,--start_time')
+  readonly start_date = Option.String('-s,--start_time', {
+    description: 'Mark all items that were purchased from this date.',
+  })
 
   override async execute() {
     const ids: number[] = this.ids_file

@@ -4,9 +4,16 @@ import { BandcampBandsCommand } from './commands/BandcampBandsCommand'
 import { BandcampOrdersCommand } from './commands/BandcampOrdersCommand'
 import { BandcampShipCommand } from './commands/BandcampShipCommand'
 
-runExit([
-  BandcampLoginCommand,
-  BandcampBandsCommand,
-  BandcampOrdersCommand,
-  BandcampShipCommand,
-])
+runExit(
+  {
+    binaryLabel: 'Bandcamp Scripts',
+    binaryName: 'bandcamp',
+    binaryVersion: require('../../../package.json').version,
+  },
+  [
+    BandcampLoginCommand,
+    BandcampBandsCommand,
+    BandcampOrdersCommand,
+    BandcampShipCommand,
+  ],
+)
