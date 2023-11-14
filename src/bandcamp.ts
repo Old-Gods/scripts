@@ -59,6 +59,14 @@ export async function getMerch(query: {
   return (await api('/merchorders/1/get_merch_details', query)).items
 }
 
+export async function getShippingOrigins(query: {
+  band_id?: number
+  origin_id?: number
+}) {
+  return (await api('/merchorders/1/get_shipping_origin_details', query))
+    .shipping_origins
+}
+
 export async function updateShipping(
   items: {
     id: number

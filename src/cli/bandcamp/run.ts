@@ -4,6 +4,7 @@ import { BandcampBandsCommand } from './commands/BandcampBandsCommand'
 import { BandcampOrdersCommand } from './commands/BandcampOrdersCommand'
 import { BandcampShipCommand } from './commands/BandcampShipCommand'
 import { BandcampMerchCommand } from './commands/BandcampMerchCommand'
+import { BandcampShippingOriginsCommand } from './commands/BandcampShippingOriginsCommand'
 
 runExit(
   {
@@ -16,6 +17,7 @@ runExit(
     BandcampBandsCommand,
     BandcampMerchCommand,
     BandcampOrdersCommand,
+    BandcampShippingOriginsCommand,
     BandcampShipCommand,
   ],
 )

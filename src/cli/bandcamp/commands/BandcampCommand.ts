@@ -16,11 +16,14 @@ export abstract class BandcampCommand extends Command {
     return spinner
   }
 
-  static BandIdOption() {
+  static BandIdOption(): number
+  static BandIdOption(required: true): number
+  static BandIdOption(required: false): number | undefined
+  static BandIdOption(required = true) {
     return Option.String('-b,--band_id', {
       description:
         'Bandcamp ID of your label or the (usually) label on whose behalf you are querying.',
-      required: true,
+      required,
       validator: t.isNumber(),
     })
   }
