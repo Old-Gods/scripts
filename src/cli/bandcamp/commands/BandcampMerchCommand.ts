@@ -3,6 +3,7 @@ import * as t from 'typanion'
 import { BandcampCommand } from './BandcampCommand'
 import { getMerch } from '../../../bandcamp'
 import { pick } from 'lodash'
+import { BandIdOption, MemberBandIdOption } from '../Option'
 
 export class BandcampMerchCommand extends BandcampCommand {
   static override paths: string[][] = [['merch']]
@@ -68,9 +69,9 @@ origin_quantities
 `,
   })
 
-  readonly band_id = BandcampCommand.BandIdOption()
+  readonly band_id = BandIdOption()
 
-  readonly member_band_id = BandcampCommand.MemberBandIdOption()
+  readonly member_band_id = MemberBandIdOption()
 
   readonly start_time = Option.String('-s,--start_time', {
     description:

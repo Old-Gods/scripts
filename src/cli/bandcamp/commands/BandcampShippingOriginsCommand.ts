@@ -2,6 +2,7 @@ import { Command, Option } from 'clipanion'
 import * as t from 'typanion'
 import { BandcampCommand } from './BandcampCommand'
 import { getShippingOrigins } from '../../../bandcamp'
+import { BandIdOption } from '../Option'
 
 export class BandcampShippingOriginsCommand extends BandcampCommand {
   static override paths: string[][] = [['shipping']]
@@ -29,7 +30,7 @@ state_code
 `,
   })
 
-  readonly band_id = BandcampCommand.BandIdOption(false)
+  readonly band_id = BandIdOption(false)
 
   readonly origin_id = Option.String('-o,--origin_id', {
     description:

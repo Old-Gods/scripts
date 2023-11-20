@@ -3,6 +3,7 @@ import { pick } from 'lodash'
 import * as t from 'typanion'
 import { getOrders } from '../../../bandcamp'
 import { BandcampCommand } from './BandcampCommand'
+import { BandIdOption, MemberBandIdOption } from '../Option'
 
 export class BandcampOrdersCommand extends BandcampCommand {
   static override paths: string[][] = [['orders']]
@@ -110,9 +111,9 @@ payment_state
 `,
   })
 
-  readonly band_id = BandcampCommand.BandIdOption()
+  readonly band_id = BandIdOption()
 
-  readonly member_band_id = BandcampCommand.MemberBandIdOption()
+  readonly member_band_id = MemberBandIdOption()
 
   readonly start_time = Option.String('-s,--start_time', {
     description: "Earliest sale dates you're interested in.",
