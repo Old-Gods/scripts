@@ -1,6 +1,6 @@
 {
   "name": "@oldgods/scripts",
-  "packageManager": "yarn@4.0.1",
+  "packageManager": "yarn@4.0.2",
   "devDependencies": {
     "@types/lodash": "^4",
     "@types/node": "^20.9.0",
