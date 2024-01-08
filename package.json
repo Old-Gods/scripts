@@ -9,7 +9,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "axios": "^1.6.1",
+    "axios": "^1.6.5",
     "cli-table3": "^0.6.3",
     "clipanion": "^4.0.0-rc.2",
     "date-fns": "^2.30.0",
