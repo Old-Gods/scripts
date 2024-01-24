@@ -776,7 +776,7 @@ __metadata:
   resolution: "@oldgods/scripts@workspace:."
   dependencies:
     "@types/lodash": "npm:^4"
-    "@types/node": "npm:^20.9.0"
+    "@types/node": "npm:^20.11.6"
     axios: "npm:^1.6.1"
     cli-table3: "npm:^0.6.3"
     clipanion: "npm:^4.0.0-rc.2"
@@ -936,12 +936,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^20.9.0":
+"@types/node@npm:*":
   version: 20.9.0
   resolution: "@types/node@npm:20.9.0"
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 755d07de735eafda4e20af75ad9d03bdbfddef327d790e9a896142eac7493db5d8501591376e1c8227aa12eeb88e522bc727c6024504842ed40e539e8a466db9
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.11.6":
+  version: 20.11.6
+  resolution: "@types/node@npm:20.11.6"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 922bc1e78076bb79fd168902c80321b54487181e3be3386e183fc535d102d91c8902da25148eaec841410fab7fb872fd4a93ec9ac9299cedf0ebcbf16b442aa1
   languageName: node
   linkType: hard
 
