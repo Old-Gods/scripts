@@ -12,7 +12,7 @@
     "axios": "^1.6.1",
     "cli-table3": "^0.6.3",
     "clipanion": "^4.0.0-rc.2",
-    "date-fns": "^2.30.0",
+    "date-fns": "^3.6.0",
     "dotenv-extended": "^2.9.0",
     "lodash": "^4.17.21",
     "ora": "^5.4.1",
