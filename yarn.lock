@@ -779,7 +779,7 @@ __metadata:
     "@types/node": "npm:^20.9.0"
     axios: "npm:^1.6.1"
     cli-table3: "npm:^0.6.3"
-    clipanion: "npm:^4.0.0-rc.2"
+    clipanion: "npm:^4.0.0-rc.4"
     date-fns: "npm:^2.30.0"
     dotenv-extended: "npm:^2.9.0"
     jest: "npm:^29.7.0"
@@ -1420,14 +1420,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clipanion@npm:^4.0.0-rc.2":
-  version: 4.0.0-rc.2
-  resolution: "clipanion@npm:4.0.0-rc.2"
+"clipanion@npm:^4.0.0-rc.4":
+  version: 4.0.0-rc.4
+  resolution: "clipanion@npm:4.0.0-rc.4"
   dependencies:
     typanion: "npm:^3.8.0"
   peerDependencies:
     typanion: "*"
-  checksum: b0a9e113879862823225e5395c93acd73e013f599578c25ee3bd87a558fd4c0385a58dfa0ae42bf981e324cecde5ea4792501efbe2459324ba5292c1cd1171a9
+  checksum: 047b415b59a5e9777d00690fba563ccc850eca6bf27790a88d1deea3ecc8a89840ae9aed554ff284cc698a9f3f20256e43c25ff4a7c4c90a71e5e7d9dca61dd1
   languageName: node
   linkType: hard
 
