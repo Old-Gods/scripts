@@ -785,7 +785,7 @@ __metadata:
     jest: "npm:^29.7.0"
     lodash: "npm:^4.17.21"
     ora: "npm:^5.4.1"
-    prettier: "npm:^3.1.0"
+    prettier: "npm:^3.4.0"
     ts-node: "npm:^10.9.1"
     tslib: "npm:^2.6.2"
     typanion: "npm:^3.14.0"
@@ -3274,12 +3274,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "prettier@npm:3.1.0"
+"prettier@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "prettier@npm:3.4.0"
   bin:
     prettier: bin/prettier.cjs
-  checksum: a45ea70aa97fde162ea4c4aba3dfc7859aa6a732a1db34458d9535dc3c2c16d3bc3fb5689e6cd76aa835562555303b02d9449fd2e15af3b73c8053557e25c5b6
+  checksum: 00974e5053dcf04cefe8d6bdef16d6a311d834ff074e927dcb85a425c8a300113fe60dc269373c892edb58e0e57749541f2a7a91ee51cdd40ab3092587772cae
   languageName: node
   linkType: hard
 
